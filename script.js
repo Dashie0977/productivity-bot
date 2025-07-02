@@ -2,6 +2,21 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { REST, Routes } = require('discord.js');
+// ai shit start
+const tasksFile = path.join(__dirname, 'db', 'tasks.json');
+
+function loadTasks() {
+    try {
+        return JSON.parse(fs.readFileSync(tasksFile));
+    } catch {
+        return {};
+    }
+}
+
+function saveTasks(tasks) {
+    fs.writeFileSync(tasksFile, JSON.stringify(tasks, null, 2));
+}
+//ai shit end
 
 const deployCommands = async () => {
     try {
@@ -136,6 +151,41 @@ client.on(Events.InteractionCreate, async interaction => {
         }
     }
 });
+
+//ai shit start
+client.on(Events.InteractionCreate, async interaction => {
+    if (!interaction.isMessageComponent()) return;
+
+    const userId = interaction.user.id;
+    const tasks = loadTasks();
+
+    if (interaction.customId.startsWith('replace_')) {
+        delete tasks[userId];
+        saveTasks(tasks);
+        return interaction.update({
+            content: '📝 Task cleared. Use `/currenttask` again to create a new one.',
+            components: []
+        });
+    }
+
+    if (interaction.customId.startsWith('progress_')) {
+        const [_, id, encodedDesc] = interaction.customId.split('_');
+        if (id !== userId) {
+            return interaction.reply({ content: "⚠️ This isn't your menu.", ephemeral: true });
+        }
+
+        const taskDesc = decodeURIComponent(encodedDesc);
+        const progress = interaction.values[0];
+        tasks[userId] = { description: taskDesc, progress };
+        saveTasks(tasks);
+
+        return interaction.update({
+            content: `✅ Task saved!\n> **${taskDesc}**\n📊 Progress: **${progress}**`,
+            components: []
+        });
+    }
+});
+//ai shit endd
 
 
 client.login(process.env.BOT_TOKEN);
