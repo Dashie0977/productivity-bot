@@ -48,7 +48,7 @@ module.exports = {
             const collected = await interaction.channel.awaitMessages({ filter, max: 1, time: 15000 });
 
             if (!collected.size) {
-                return interaction.followUp({ content: '⏰ You took too long. Try again.', ephemeral: true });
+                return interaction.followUp({ content: '⏰ You took too long. Try again.' });
             }
 
             const taskDesc = collected.first().content;
