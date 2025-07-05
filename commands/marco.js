@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const fs = require('fs');
+const db = require('../db/database');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,20 +11,19 @@ module.exports = {
             .setDescription('say marco!')
             .setRequired(true)),
             async execute(interaction) {
-                let usageData = {};
-                try {
-                usageData = JSON.parse(fs.readFileSync('./db/polo.json', 'utf8'));
-                } catch (err) {
-                usageData = {};
+                const userId = interaction.user.id;
+                
+                let record = await db.Usage.findOne({ where: { userId } });
+
+                if (!record) {
+                record = await db.Usage.create({ userId, count: 1 });
+                } else {
+                record.count += 1;
+                await record.save();
                 }
 
-                const userId = interaction.user.id;
-                let count = usageData[userId] || 0;
-                count++;
-                usageData[userId] = count;
-
                 const marco =  interaction.options.getString('message');
-                if (count % 5 === 0) {
+                if (record.count % 5 === 0) {
                     if (marco.toLowerCase() === "marco") {
                         await interaction.reply(`Aren't we done with this yet! 😩`);
                     } else {
@@ -37,7 +37,7 @@ module.exports = {
                     }
                     
                 }
-                fs.writeFileSync('./db/polo.json', JSON.stringify(usageData, null, 2));
+                //fs.writeFileSync('./db/polo.json', JSON.stringify(usageData, null, 2));
                 }
 
 

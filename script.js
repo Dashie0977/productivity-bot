@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { REST, Routes } = require('discord.js');
-// ai shit start
+// review code start
 const tasksFile = path.join(__dirname, 'db', 'tasks.json');
 
 function loadTasks() {
@@ -16,7 +16,7 @@ function loadTasks() {
 function saveTasks(tasks) {
     fs.writeFileSync(tasksFile, JSON.stringify(tasks, null, 2));
 }
-//ai shit end
+//review code end
 
 const deployCommands = async () => {
     try {
@@ -152,7 +152,7 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-//ai shit start
+//review code start
 client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isMessageComponent()) return;
 
@@ -185,7 +185,15 @@ client.on(Events.InteractionCreate, async interaction => {
         });
     }
 });
-//ai shit endd
+
+const db = require('./db/database');
+
+db.sequelize.sync().then(() => {
+  console.log('Database synced!');
+});
+
+
+//review code end
 
 
 client.login(process.env.BOT_TOKEN);
