@@ -10,6 +10,6 @@ module.exports = {
             .setRequired(true)),
             async execute(interaction) {
                 const message = interaction.options.getString('message');
-                await interaction.reply(`<@${interaction.user.id}> says: ${message}`);
+                await interaction.reply(`<@${interaction.user.id}> says: "${message}"`);
             }
 }
