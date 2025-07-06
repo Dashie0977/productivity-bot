@@ -5,22 +5,33 @@ const sequelize = new Sequelize({
   storage: './db/database.sqlite'
 });
 
-const db = {}; // This will be the exported object
+const db = {}; // exported object
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Define your models
+// Define models
 db.Usage = sequelize.define('Usage', {
   userId: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
   count: {
     type: DataTypes.INTEGER,
-    defaultValue: 0
+    defaultValue: 0,
+  },
+  commandName: {
+    type: DataTypes.STRING,
+    allowNull: false,
   }
+}, {
+  indexes: [
+    {
+      unique: true,
+      fields: ['userId', 'commandName']
+    }
+  ]
 });
+
 
 module.exports = db;

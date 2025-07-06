@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const fs = require('fs');
+//const fs = require('fs');
 const db = require('../db/database');
 
 module.exports = {
@@ -12,11 +12,11 @@ module.exports = {
             .setRequired(true)),
             async execute(interaction) {
                 const userId = interaction.user.id;
-                
-                let record = await db.Usage.findOne({ where: { userId } });
+                const commandName = interaction.commandName;
+                let record = await db.Usage.findOne({ where: { userId, commandName } });
 
                 if (!record) {
-                record = await db.Usage.create({ userId, count: 1 });
+                record = await db.Usage.create({ userId, count: 1,commandName });
                 } else {
                 record.count += 1;
                 await record.save();
