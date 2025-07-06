@@ -1,3 +1,4 @@
 .env
 db/tasks.json
 db/polo.json
+db/database.sqlite
